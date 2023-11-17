@@ -1,13 +1,15 @@
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 import './style.css';
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
+
 
 // -------------------------------------------------------
 let scene: THREE.Scene,
   camera: THREE.PerspectiveCamera,
   renderer: THREE.WebGLRenderer,
   model: THREE.Mesh | undefined;
-const objectTypes = ['default', 'ball', 'box'];
+const objectTypes = ['default', 'box', 'ball'];
 let currentObjectType = 0;
 let scrollCount = 0;
 let isAnimationDone = false;
@@ -55,19 +57,19 @@ function init() {
 
 // -------------------------------------------------------
 
-function loadModel(modelPath: string, scale: number = 10) {
+function loadModel(modelPath: string, scale: number = 8) {
   const loader = new GLTFLoader();
   loader.load(
     modelPath,
     (gltf) => {
       //@ts-ignore
       model = gltf.scene;
-      
+
       // Set the scale of the model
 
       //@ts-ignore
       model.scale.set(scale, scale, scale);
-      
+
       //@ts-ignore
       scene.add(model);
     },
@@ -89,12 +91,9 @@ function createMaterial({ shape, color, texture }: { shape: THREE.BufferGeometry
 // -------------------------------------------------------
 
 function updateDummyObject() {
-  console.log({ inTheUpdateDummyObject: Boolean(model) })
   if (model) {
-    console.log({ model })
-    console.log("SHOULD BE REMOVE")
+    // new TWEEN.Tween(model.scale).to({ x: 1, y: 1, z: 1 }, 900).start();
     scene.remove(model);
-    console.log("REMOVED")
   }
 
   switch (objectTypes[currentObjectType]) {
@@ -114,6 +113,7 @@ function updateDummyObject() {
       model = doughnut
       scene.add(doughnut);
   }
+  new TWEEN.Tween(model.scale).to({ x: 1.25, y: 1.25, z: 1.25 }, 900).start();
 
 }
 
@@ -122,7 +122,7 @@ function updateDummyObject() {
 
 function animate() {
   requestAnimationFrame(animate);
-
+  TWEEN.update();
   if (model) {
     // model.rotation.x += 0.01;
     model.rotation.y += 0.005;
